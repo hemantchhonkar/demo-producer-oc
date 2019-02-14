@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: demo-producer-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-producer-2
+  template:
+    metadata:
+      labels:
+        app: demo-producer-2
+    spec:
+      containers:
+      - name: demo-producer-2
+        image: hemant231/demo-producer-image
+      imagePullSecrets:
+      - name: dochubcred
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: /
+        - name: _JAVA_OPTIONS
+          value: -Dlogging.level.org.springframework.security=DEBUG
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-producer-2
+  ? labels
+spec:
+  ports:
+  - port: 80
+    targetPort: 8081
+    protocol: TCP
+    name: http
+  selector:
+    app: demo-producer-2
